@@ -5,18 +5,26 @@ package model.tarot;
  * on 29/01/2017.
  */
 public enum NumberOfBouts {
-    NONE(56),
-    ONE(51),
-    TWO(41),
-    THREE(36);
+    NONE(56, "0"),
+    ONE(51, "1"),
+    TWO(41, "2"),
+    THREE(36, "3");
 
     int contractValue;
+    String description;
 
-    NumberOfBouts(int contractValue) {
+    NumberOfBouts(int contractValue, String description) {
         this.contractValue = contractValue;
+        this.description = description;
     }
 
     public int getContractValue() {
         return contractValue;
+    }
+
+
+    @Override
+    public String toString() {
+        return description;
     }
 }

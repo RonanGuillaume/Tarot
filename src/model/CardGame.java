@@ -55,4 +55,10 @@ public abstract class CardGame extends Observable{
         }
         setChanged();
     }
+
+    public void removeTrick(Trick trick){
+        tricks.remove(trick);
+
+        setChanged();
+    }
 }

@@ -20,12 +20,11 @@ public class Trick4Players extends Trick{
         super(trickParticipants);
     }
 
-    public Trick4Players(List<Participant> trickParticipants, Participant taker, int trickValue, TrickTarotDescription description) {
+    public Trick4Players(List<Participant> trickParticipants, Participant taker, TrickTarotDescription description) {
         super(trickParticipants);
         this.taker = taker;
-        this.trickValue = trickValue;
         this.description = description;
-        calculateTrickValue();
+        calculateScore();
     }
 
     private void calculateTrickValue() {
@@ -58,9 +57,10 @@ public class Trick4Players extends Trick{
 
     @Override
     public void calculateScore() {
+        calculateTrickValue();
         for (Participant participant : getTrickParticipants()) {
             setScoreOfParticipant(participant, trickValue*-1);
         }
-        setScoreOfParticipant(taker, trickValue*getTrickParticipants().size() - 1);
+        setScoreOfParticipant(taker, trickValue*(getTrickParticipants().size() - 1));
     }
 }

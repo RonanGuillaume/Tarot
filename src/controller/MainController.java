@@ -2,6 +2,7 @@ package controller;
 
 import model.CardGame;
 import model.Participant;
+import model.Trick;
 import model.tarot.tarot4Players.Tarot4PlayersGame;
 import model.tarot.tarot4Players.Trick4Players;
 import view.HomeView;
@@ -33,6 +34,14 @@ public class MainController implements ActionListener{
                 case "Create game":
                     onCreate();
                     break;
+                case "Add":
+                    cardGame.addTrick(new Trick4Players(((MainViewTarot4Player)mainView).getParticipant(), ((MainViewTarot4Player)mainView).getTaker(), ((MainViewTarot4Player)mainView).onAdd()));
+                    break;
+                case "Remove":
+                    for (Trick trick : ((MainViewTarot4Player)mainView).getSelectedTricks()) {
+                        cardGame.removeTrick(trick);
+                    }
+                    break;
                 default:
                     throw new IllegalArgumentException("Invalid command");
             }
@@ -58,7 +67,7 @@ public class MainController implements ActionListener{
                 cardGame = new Tarot4PlayersGame(participants);
                 cardGame.addTrick(new Trick4Players(participants));
                 homeView.dispose();
-                mainView = new MainViewTarot4Player(participants);
+                mainView = new MainViewTarot4Player(participants, this);
                 cardGame.addObserver(mainView);
                 break;
             default:

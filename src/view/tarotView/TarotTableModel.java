@@ -54,7 +54,7 @@ public class TarotTableModel extends AbstractTableModel{
         }
         switch (getColumnName(columnIndex)){
             case "Tour" :
-                return Integer.toString(tricks.size() - 1);
+                return Integer.toString(rowIndex);
             default:
                 return Integer.toString(tricks.get(rowIndex).getScores().get(header.get(columnIndex - 1)));
         }
@@ -71,5 +71,13 @@ public class TarotTableModel extends AbstractTableModel{
             sum += trick.getScores().get(header.get(columnIndex - 1));
         }
         return sum;
+    }
+
+    public List<Participant> getHeader() {
+        return header;
+    }
+
+    public Trick getElementAt(int index) {
+        return tricks.get(index);
     }
 }

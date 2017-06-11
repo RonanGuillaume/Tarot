@@ -1,15 +1,16 @@
 package view.tarotView;
 
 import model.Participant;
-import model.tarot.ChelemBonus;
-import model.tarot.ContractType;
-import model.tarot.PoigneeBonus;
+import model.Trick;
+import model.tarot.*;
 import model.tarot.tarot4Players.Tarot4PlayersGame;
 import view.MainView;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -24,8 +25,6 @@ public class MainViewTarot4Player extends MainView implements Observer{
     private JTable trickTable;
     private JButton exitButton;
     private JComboBox<ContractType> contractComboBox;
-    private JTextField attackMarkedTextField;
-    private JTextField defenceTextField;
     private JComboBox<PoigneeBonus> attackPoigneeComboBox;
     private JComboBox<PoigneeBonus> defencePoigneeComboBox;
     private JComboBox<ChelemBonus> attackChelemComboBox;
@@ -36,20 +35,39 @@ public class MainViewTarot4Player extends MainView implements Observer{
     private JCheckBox defenceCheckBox;
     private JLabel pointsContract;
     private JLabel resultLabel;
-    private JLabel attackPoints;
-    private JLabel defencePoints;
-    private JLabel attackTotal;
-    private JLabel defenceTotal;
+    private JComboBox<NumberOfBouts> boutsComboBox;
+    private JSpinner attackPointsSpinner;
+    private JSpinner defencePointsSpinner;
+    private JButton removeButton;
 
-    public MainViewTarot4Player(ArrayList<Participant> participants) throws HeadlessException {
+    public MainViewTarot4Player(ArrayList<Participant> participants, ActionListener actionListener) throws HeadlessException {
         super("Card game");
 
         setContentPane(mainPanel);
 
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
+        pointsContract.setText("(56)");
+        resultLabel.setText("Victory");
+        resultLabel.setForeground(Color.WHITE);
+        resultLabel.setBackground(new Color(0, 114, 0));
+        resultLabel.setOpaque(true);
+
+        removeButton.setEnabled(false);
+
         tarotTableModel = new TarotTableModel(participants);
         trickTable.setModel(tarotTableModel);
+
+        SpinnerNumberModel attackSpinnerNumberModel = new SpinnerNumberModel(56, 0, 92, 1);
+        SpinnerNumberModel defenceSpinnerNumberModel = new SpinnerNumberModel(36, 0, 92, 1);
+        attackPointsSpinner.setModel(attackSpinnerNumberModel);
+        defencePointsSpinner.setModel(defenceSpinnerNumberModel);
+
+        DefaultComboBoxModel<NumberOfBouts> numberOfBoutsDefaultComboBoxModel = new DefaultComboBoxModel<>();
+        for (NumberOfBouts numberOfBouts : NumberOfBouts.values()) {
+            numberOfBoutsDefaultComboBoxModel.addElement(numberOfBouts);
+        }
+        boutsComboBox.setModel(numberOfBoutsDefaultComboBoxModel);
 
         DefaultComboBoxModel<Participant> participantDefaultComboBoxModel = new DefaultComboBoxModel<>();
         for (Participant participant : participants) {
@@ -99,11 +117,100 @@ public class MainViewTarot4Player extends MainView implements Observer{
             System.exit(0);
         });
 
-        addButton.addActionListener(e -> onAdd());
+        ListSelectionModel listSelectionModel = trickTable.getSelectionModel();
+        listSelectionModel.addListSelectionListener(e -> {
+            if (e.getValueIsAdjusting()) {
+                return;
+            }
+
+            int[] selection = trickTable.getSelectedRows();
+
+            boolean test = true;
+
+            if (selection != null){
+                for (int index : selection) {
+                    if (index == 0 || index == tarotTableModel.getRowCount() - 1){
+                        test = false;
+                        break;
+                    }
+                }
+            }
+
+            boolean isSelection = selection != null && selection.length != 0;
+            removeButton.setEnabled(isSelection && test);
+        });
+
+        addButton.addActionListener(actionListener);
+        boutsComboBox.addItemListener(e -> numberOfBoutsComboBoxChanged());
+
+        attackPointsSpinner.addChangeListener(e -> attackPointsChanged());
+        defencePointsSpinner.addChangeListener(e -> defencePointsChanged());
+
+        removeButton.setActionCommand("Remove");
+        removeButton.addActionListener(actionListener);
     }
 
-    private void onAdd() {
+    private void defencePointsChanged() {
+        attackPointsSpinner.setValue(92 - (int)defencePointsSpinner.getValue());
+        refreshResult();
+    }
 
+    private void attackPointsChanged() {
+        defencePointsSpinner.setValue(92 - (int)attackPointsSpinner.getValue());
+        refreshResult();
+    }
+
+    private void refreshResult() {
+        if ((int)attackPointsSpinner.getValue() < ((NumberOfBouts)boutsComboBox.getSelectedItem()).getContractValue()){
+            resultLabel.setText("Defeat");
+            resultLabel.setBackground(new Color(114, 2, 0));
+        }
+        else {
+            resultLabel.setText("Victory");
+            resultLabel.setBackground(new Color(0, 114, 0));
+        }
+    }
+
+    private void numberOfBoutsComboBoxChanged() {
+        pointsContract.setText("(" +
+                Integer.toString(((NumberOfBouts)boutsComboBox.getSelectedItem()).getContractValue()) + ")");
+        refreshResult();
+    }
+
+    public TrickTarotDescription onAdd() throws IllegalArgumentException{
+        PetitAuBoutBonus petitAuBoutBonus;
+        if (attackCheckBox.isSelected() && defenceCheckBox.isSelected()){
+            throw new IllegalArgumentException("Attack and defense can't bring petit au bout both.");
+        }
+        else if (attackCheckBox.isSelected()){
+            petitAuBoutBonus = PetitAuBoutBonus.ATTACK;
+        }
+        else if (defenceCheckBox.isSelected()){
+            petitAuBoutBonus = PetitAuBoutBonus.DEFENCE;
+        }
+        else {
+            petitAuBoutBonus = PetitAuBoutBonus.NONE;
+        }
+        return new TrickTarotDescription((PoigneeBonus) attackPoigneeComboBox.getSelectedItem(), petitAuBoutBonus,
+                (int)attackPointsSpinner.getValue(), (int)defencePointsSpinner.getValue(),
+                (ContractType) contractComboBox.getSelectedItem(), (ChelemBonus) attackChelemComboBox.getSelectedItem(),
+                (Participant) attackComboBox.getSelectedItem(), (NumberOfBouts) boutsComboBox.getSelectedItem());
+    }
+
+    public List<Participant> getParticipant(){
+        return tarotTableModel.getHeader();
+    }
+
+    public Participant getTaker(){
+        return (Participant) attackComboBox.getSelectedItem();
+    }
+
+    public List<Trick> getSelectedTricks(){
+        ArrayList<Trick> result = new ArrayList<>();
+        for (int index : trickTable.getSelectedRows()) {
+            result.add(tarotTableModel.getElementAt(index));
+        }
+        return result;
     }
 
     @Override
