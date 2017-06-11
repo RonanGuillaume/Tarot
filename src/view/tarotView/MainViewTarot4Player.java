@@ -63,44 +63,7 @@ public class MainViewTarot4Player extends MainView implements Observer{
         attackPointsSpinner.setModel(attackSpinnerNumberModel);
         defencePointsSpinner.setModel(defenceSpinnerNumberModel);
 
-        DefaultComboBoxModel<NumberOfBouts> numberOfBoutsDefaultComboBoxModel = new DefaultComboBoxModel<>();
-        for (NumberOfBouts numberOfBouts : NumberOfBouts.values()) {
-            numberOfBoutsDefaultComboBoxModel.addElement(numberOfBouts);
-        }
-        boutsComboBox.setModel(numberOfBoutsDefaultComboBoxModel);
-
-        DefaultComboBoxModel<Participant> participantDefaultComboBoxModel = new DefaultComboBoxModel<>();
-        for (Participant participant : participants) {
-            participantDefaultComboBoxModel.addElement(participant);
-        }
-        attackComboBox.setModel(participantDefaultComboBoxModel);
-
-        ContractType[] myContractTypes = ContractType.values();
-        DefaultComboBoxModel<ContractType> contractTypeDefaultComboBoxModel = new DefaultComboBoxModel<>();
-        for (ContractType contractType : myContractTypes) {
-            contractTypeDefaultComboBoxModel.addElement(contractType);
-        }
-        contractComboBox.setModel(contractTypeDefaultComboBoxModel);
-
-        PoigneeBonus[] myPoigneBonus = PoigneeBonus.values();
-        DefaultComboBoxModel<PoigneeBonus> poigneeBonusAttackDefaultComboBoxModel = new DefaultComboBoxModel<>();
-        DefaultComboBoxModel<PoigneeBonus> poigneeBonusDefenceDefaultComboBoxModel = new DefaultComboBoxModel<>();
-        for (PoigneeBonus poigneeBonus : myPoigneBonus) {
-            poigneeBonusAttackDefaultComboBoxModel.addElement(poigneeBonus);
-            poigneeBonusDefenceDefaultComboBoxModel.addElement(poigneeBonus);
-        }
-        attackPoigneeComboBox.setModel(poigneeBonusAttackDefaultComboBoxModel);
-        defencePoigneeComboBox.setModel(poigneeBonusDefenceDefaultComboBoxModel);
-
-        ChelemBonus[] myChelemBonus = ChelemBonus.values();
-        DefaultComboBoxModel<ChelemBonus> chelemBonusAttackDefaultComboBoxModel = new DefaultComboBoxModel<>();
-        DefaultComboBoxModel<ChelemBonus> chelemBonusDefenceDefaultComboBoxModel = new DefaultComboBoxModel<>();
-        for (ChelemBonus chelemBonus : myChelemBonus) {
-            chelemBonusAttackDefaultComboBoxModel.addElement(chelemBonus);
-            chelemBonusDefenceDefaultComboBoxModel.addElement(chelemBonus);
-        }
-        attackChelemComboBox.setModel(chelemBonusAttackDefaultComboBoxModel);
-        defenceChelemComboBox.setModel(chelemBonusDefenceDefaultComboBoxModel);
+        initComboBox(participants);
 
         //Minimize the frame's size and freeze the minimum size
         pack();
@@ -148,6 +111,47 @@ public class MainViewTarot4Player extends MainView implements Observer{
 
         removeButton.setActionCommand("Remove");
         removeButton.addActionListener(actionListener);
+    }
+
+    private void initComboBox(List<Participant> participants) {
+        DefaultComboBoxModel<NumberOfBouts> numberOfBoutsDefaultComboBoxModel = new DefaultComboBoxModel<>();
+        for (NumberOfBouts numberOfBouts : NumberOfBouts.values()) {
+            numberOfBoutsDefaultComboBoxModel.addElement(numberOfBouts);
+        }
+        boutsComboBox.setModel(numberOfBoutsDefaultComboBoxModel);
+
+        DefaultComboBoxModel<Participant> participantDefaultComboBoxModel = new DefaultComboBoxModel<>();
+        for (Participant participant : participants) {
+            participantDefaultComboBoxModel.addElement(participant);
+        }
+        attackComboBox.setModel(participantDefaultComboBoxModel);
+
+        ContractType[] myContractTypes = ContractType.values();
+        DefaultComboBoxModel<ContractType> contractTypeDefaultComboBoxModel = new DefaultComboBoxModel<>();
+        for (ContractType contractType : myContractTypes) {
+            contractTypeDefaultComboBoxModel.addElement(contractType);
+        }
+        contractComboBox.setModel(contractTypeDefaultComboBoxModel);
+
+        PoigneeBonus[] myPoigneBonus = PoigneeBonus.values();
+        DefaultComboBoxModel<PoigneeBonus> poigneeBonusAttackDefaultComboBoxModel = new DefaultComboBoxModel<>();
+        DefaultComboBoxModel<PoigneeBonus> poigneeBonusDefenceDefaultComboBoxModel = new DefaultComboBoxModel<>();
+        for (PoigneeBonus poigneeBonus : myPoigneBonus) {
+            poigneeBonusAttackDefaultComboBoxModel.addElement(poigneeBonus);
+            poigneeBonusDefenceDefaultComboBoxModel.addElement(poigneeBonus);
+        }
+        attackPoigneeComboBox.setModel(poigneeBonusAttackDefaultComboBoxModel);
+        defencePoigneeComboBox.setModel(poigneeBonusDefenceDefaultComboBoxModel);
+
+        ChelemBonus[] myChelemBonus = ChelemBonus.values();
+        DefaultComboBoxModel<ChelemBonus> chelemBonusAttackDefaultComboBoxModel = new DefaultComboBoxModel<>();
+        DefaultComboBoxModel<ChelemBonus> chelemBonusDefenceDefaultComboBoxModel = new DefaultComboBoxModel<>();
+        for (ChelemBonus chelemBonus : myChelemBonus) {
+            chelemBonusAttackDefaultComboBoxModel.addElement(chelemBonus);
+            chelemBonusDefenceDefaultComboBoxModel.addElement(chelemBonus);
+        }
+        attackChelemComboBox.setModel(chelemBonusAttackDefaultComboBoxModel);
+        defenceChelemComboBox.setModel(chelemBonusDefenceDefaultComboBoxModel);
     }
 
     private void defencePointsChanged() {
